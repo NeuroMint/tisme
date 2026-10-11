@@ -309,9 +309,20 @@ function EntryCard({
   const [editing, setEditing] = useState(false);
   const [draftText, setDraftText] = useState(entry.draftText || "");
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function readError(res: Response, fallback: string) {
+    try {
+      const body = await res.json();
+      return body.error || fallback;
+    } catch {
+      return `${fallback} (HTTP ${res.status})`;
+    }
+  }
 
   async function saveDraft() {
     setBusy(true);
+    setError(null);
     const res = await fetch(`/api/entries/${entry.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -321,33 +332,44 @@ function EntryCard({
     if (res.ok) {
       onUpdated(await res.json());
       setEditing(false);
+    } else {
+      setError(await readError(res, "Couldn't save that edit."));
     }
   }
 
   async function rerunAiDraft() {
     setBusy(true);
+    setError(null);
     const res = await fetch(`/api/entries/${entry.id}/draft`, { method: "POST" });
     setBusy(false);
     if (res.ok) {
       const updated = await res.json();
       onUpdated(updated);
       setDraftText(updated.draftText || "");
+    } else {
+      setError(await readError(res, "AI polish failed."));
     }
   }
 
   async function saveTranscript(transcript: string) {
     setBusy(true);
+    setError(null);
     const res = await fetch(`/api/entries/${entry.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ transcript }),
     });
     setBusy(false);
-    if (res.ok) onUpdated(await res.json());
+    if (res.ok) {
+      onUpdated(await res.json());
+    } else {
+      setError(await readError(res, "Couldn't save the transcript."));
+    }
   }
 
   async function addPhoto(file: File) {
     setBusy(true);
+    setError(null);
     const form = new FormData();
     form.append("photo", file);
     const res = await fetch(`/api/entries/${entry.id}/photos`, {
@@ -358,15 +380,22 @@ function EntryCard({
     if (res.ok) {
       const media = await res.json();
       onUpdated({ ...entry, media: [...entry.media, media] });
+    } else {
+      setError(await readError(res, "Couldn't upload that photo."));
     }
   }
 
   async function del() {
     if (!confirm("Delete this entry? This can't be undone.")) return;
     setBusy(true);
+    setError(null);
     const res = await fetch(`/api/entries/${entry.id}`, { method: "DELETE" });
     setBusy(false);
-    if (res.ok) onDeleted(entry.id);
+    if (res.ok) {
+      onDeleted(entry.id);
+    } else {
+      setError(await readError(res, "Couldn't delete that entry."));
+    }
   }
 
   return (
@@ -385,6 +414,12 @@ function EntryCard({
           Delete
         </button>
       </div>
+
+      {error && (
+        <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2">
+          {error}
+        </p>
+      )}
 
       {entry.type === "AUDIO" && entry.audioPath && (
         <audio controls src={`/api/files/${entry.audioPath}`} className="w-full" />

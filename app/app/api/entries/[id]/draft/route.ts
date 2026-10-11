@@ -29,11 +29,18 @@ export async function POST(
     );
   }
 
-  const drafted = await draftNarrative({
-    chapterTitle: entry.chapter.title,
-    questionText: entry.question?.text,
-    rawText: source,
-  });
+  let drafted: string | null;
+  try {
+    drafted = await draftNarrative({
+      chapterTitle: entry.chapter.title,
+      questionText: entry.question?.text,
+      rawText: source,
+    });
+  } catch (err) {
+    console.error("draftNarrative failed", err);
+    const message = err instanceof Error ? err.message : "Unknown error calling Claude";
+    return NextResponse.json({ error: message }, { status: 502 });
+  }
 
   if (!drafted) {
     return NextResponse.json({ error: "Drafting failed" }, { status: 500 });
