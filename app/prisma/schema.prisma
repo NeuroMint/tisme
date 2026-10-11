@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Chapter {
+  id          Int        @id @default(autoincrement())
+  number      Int        @unique
+  part        String
+  title       String
+  description String
+  questions   Question[]
+  entries     Entry[]
+}
+
+model Question {
+  id        Int      @id @default(autoincrement())
+  text      String
+  chapterId Int
+  chapter   Chapter  @relation(fields: [chapterId], references: [id])
+  entries   Entry[]
+}
+
+model Entry {
+  id               Int         @id @default(autoincrement())
+  title            String
+  type             String // "TEXT" | "AUDIO"
+  eventYear        String? // free text, e.g. "1983" or "1983-1985"
+  rawText          String? // typed answer, or edited transcript
+  transcript       String? // raw transcription of audio, if any
+  transcriptStatus String      @default("NONE") // NONE | PENDING | DONE | FAILED | UNAVAILABLE
+  draftText        String? // AI-polished narrative (or copy of rawText if no AI)
+  draftStatus      String      @default("NONE") // NONE | AI | MANUAL | UNAVAILABLE
+  audioPath        String?
+  chapterId        Int
+  chapter          Chapter     @relation(fields: [chapterId], references: [id])
+  questionId       Int?
+  question         Question?   @relation(fields: [questionId], references: [id])
+  media            MediaFile[]
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+}
+
+model MediaFile {
+  id        Int      @id @default(autoincrement())
+  kind      String // "PHOTO"
+  path      String
+  caption   String?
+  entryId   Int
+  entry     Entry    @relation(fields: [entryId], references: [id])
+  createdAt DateTime @default(now())
+}

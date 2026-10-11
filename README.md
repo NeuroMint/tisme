@@ -17,19 +17,29 @@ bigger idea, structured so it can grow into one if it proves out.
 | `docs/roles.md` | Who does what — Graham, Tom, family, AI assistant |
 | `docs/chapter-outline.md` | Working chapter structure for the autobiography |
 | `docs/interview-guide.md` | ~40 starter questions + the memory-trigger method |
-| `docs/business-names.md` | Notes on the shortlisted platform names |
+| `docs/business-names.md` | The naming decision (Tisme, over Legasee) and why |
 | `archive/` | The actual working folders for Graham's material (recordings, photos, documents, drafts) |
+| `app/` | The Tisme web app — see `app/README.md` to run it |
+
+## The app
+
+`app/` is a working single-user web app: pick a chapter, answer a guided
+question (typed or recorded voice), get an optional AI transcript and
+polished narrative draft, attach photos, see everything on a timeline, and
+export the whole thing to a manuscript. See `app/README.md` to run it.
 
 ## Where to start
 
-1. Read `docs/roadmap.md` — Phase 1 is five small tasks, about two weeks.
-2. Create a `Life Timeline Map` — see `docs/chapter-outline.md`.
-3. Record one voice memo this week using a question from
-   `docs/interview-guide.md`. Drop it in `archive/01-autobiography-recordings/`.
-4. Don't try to fill everything at once — one story at a time.
+1. Run the app (`app/README.md`) and answer one question in one chapter.
+2. Or, if you'd rather work offline first: create a `Life Timeline Map` (see
+   `docs/chapter-outline.md`) and record a voice memo using a question from
+   `docs/interview-guide.md` — drop it in `archive/01-autobiography-recordings/`
+   and add it to the app later.
+3. Don't try to fill everything at once — one story at a time.
 
 ## Status
 
-Pilot stage (Phase 1). Objective right now: Graham's autobiography. The
-platform/business idea stays parked in `docs/concept-brief.md` until the
-pilot proves the process works.
+Pilot stage, now with a working app (Phase 1–2 of `docs/roadmap.md`
+overlapping). Objective right now: get Graham's stories into the app,
+chapter by chapter. The wider multi-family platform idea stays parked in
+`docs/concept-brief.md` until this pilot proves the process out.
